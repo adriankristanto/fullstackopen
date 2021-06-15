@@ -3,16 +3,26 @@ import Filter from "./components/Filter";
 import Display from "./components/Display";
 import PhonebookForm from "./components/PhonebookForm";
 import personService from "./services/persons";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [newFilter, setNewFilter] = useState("");
+  const [notification, setNotification] = useState({
+    message: "",
+    status: "",
+  });
 
   useEffect(() => {
     personService.getAll().then((initialPersons) => setPersons(initialPersons));
   }, []);
+
+  const handleNotification = (message, status) => {
+    setNotification({ message, status });
+    setTimeout(() => setNotification({ message: "", status: "" }), 5000);
+  };
 
   const handleDuplicate = (duplicatePerson) => {
     personService
@@ -20,16 +30,19 @@ const App = () => {
         ...duplicatePerson,
         number: newNumber,
       })
-      .then((updatedPerson) =>
+      .then((updatedPerson) => {
         setPersons(
           persons.map((person) =>
             person.id === updatedPerson.id ? updatedPerson : person
           )
-        )
-      )
-      .catch((error) => {
-        alert(`${duplicatePerson.name} was already deleted from server.`);
-        console.log(error);
+        );
+        handleNotification(`Updated ${updatedPerson.name}'s number`, "success");
+      })
+      .catch((_) => {
+        handleNotification(
+          `${duplicatePerson.name} was already deleted from server.`,
+          "error"
+        );
         setPersons(
           persons.filter((person) => person.id !== duplicatePerson.id)
         );
@@ -49,9 +62,10 @@ const App = () => {
         name: newName,
         number: newNumber,
       };
-      personService
-        .createPerson(newPerson)
-        .then((createdPerson) => setPersons(persons.concat(createdPerson)));
+      personService.createPerson(newPerson).then((createdPerson) => {
+        setPersons(persons.concat(createdPerson));
+        handleNotification(`Added ${createdPerson.name}`, "success");
+      });
     }
     setNewName("");
     setNewNumber("");
@@ -69,11 +83,16 @@ const App = () => {
 
   const handleDelete = (person) => () => {
     if (window.confirm(`Delete ${person.name}?`)) {
-      personService.deletePerson(person.id).catch((error) => {
-        alert(`${person.name} was already deleted from server.`);
-        console.log(error);
-        setPersons(persons.filter((p) => p.id !== person.id));
-      }); // returns empty JSON object
+      personService
+        .deletePerson(person.id)
+        .then((_) => handleNotification(`Deleted ${person.name}`, "success"))
+        .catch((_) => {
+          handleNotification(
+            `${person.name} was already deleted from server.`,
+            "error"
+          );
+          setPersons(persons.filter((p) => p.id !== person.id));
+        }); // returns empty JSON object
       setPersons(persons.filter((p) => p.id !== person.id));
     }
   };
@@ -87,6 +106,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification notification={notification} />
       <Filter newFilter={newFilter} handleChange={handleChange} />
       <h2>add a new</h2>
       <PhonebookForm
