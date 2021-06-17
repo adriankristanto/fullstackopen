@@ -1,0 +1,44 @@
+GET https://immense-brushlands-51465.herokuapp.com/api/persons
+
+###
+
+GET https://immense-brushlands-51465.herokuapp.com/info
+
+###
+
+GET https://immense-brushlands-51465.herokuapp.com/api/persons/1
+
+###
+
+GET https://immense-brushlands-51465.herokuapp.com/api/persons/doesntexist
+
+###
+
+POST https://immense-brushlands-51465.herokuapp.com/api/persons
+Content-Type: application/json
+
+{
+    "name": "Liisa Marttinen",
+    "number": "040-243563"
+}
+
+###
+
+POST https://immense-brushlands-51465.herokuapp.com/api/persons
+Content-Type: application/json
+
+{
+    "number": "39-44-5323523"
+}
+
+###
+
+POST https://immense-brushlands-51465.herokuapp.com/api/persons
+Content-Type: application/json
+
+{
+    "name": "Test Person"
+}
+###
+
+DELETE https://immense-brushlands-51465.herokuapp.com/api/persons/909673782979919
