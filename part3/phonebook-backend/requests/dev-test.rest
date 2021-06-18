@@ -28,6 +28,16 @@ POST http://localhost:3001/api/persons
 Content-Type: application/json
 
 {
+    "name": "Test name",
+    "number": "Test number"
+}
+
+###
+
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
     "number": "39-44-5323523"
 }
 
