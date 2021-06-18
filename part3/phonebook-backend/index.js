@@ -24,29 +24,6 @@ app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :body")
 );
 
-let persons = [
-  {
-    id: 1,
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: 2,
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: 3,
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: 4,
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-];
-
 // fetch all resources
 app.get("/api/persons", (request, response) => {
   Person.find({}).then((persons) => {
@@ -55,23 +32,29 @@ app.get("/api/persons", (request, response) => {
 });
 
 // fetch info
-app.get("/info", (request, response) => {
-  const info = `
-  <p>Phonebook has info for ${persons.length} people</p>
-  <p>${new Date().toString()}</p>
-  `;
-  response.send(info);
+app.get("/info", (request, response, next) => {
+  Person.countDocuments()
+    .then((count) => {
+      const info = `
+    <p>Phonebook has info for ${count} people</p>
+    <p>${new Date().toString()}</p>
+    `;
+      response.send(info);
+    })
+    .catch((error) => next(error));
 });
 
 // fetch a single resource
-app.get("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const person = persons.find((person) => person.id === id);
-  if (person) {
-    response.json(person);
-  } else {
-    response.status(404).end();
-  }
+app.get("/api/persons/:id", (request, response, next) => {
+  Person.findById(request.params.id)
+    .then((result) => {
+      if (result) {
+        response.json(result);
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((error) => next(error));
 });
 
 // delete a resource
