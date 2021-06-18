@@ -90,9 +90,8 @@ app.post("/api/persons", (request, response) => {
     return response.status(400).send({ error: "missing name" });
   } else if (!body.number) {
     return response.status(400).send({ error: "missing number" });
-  } else if (persons.find((person) => person.name === body.name)) {
-    return response.status(409).send({ error: "name must be unique" });
   }
+
   const newPerson = new Person({
     name: body.name,
     number: body.number,
@@ -101,6 +100,20 @@ app.post("/api/persons", (request, response) => {
   newPerson.save().then((savedPerson) => {
     response.json(savedPerson);
   });
+});
+
+// update a resource
+app.put("/api/persons/:id", (request, response, next) => {
+  const body = request.body;
+
+  const person = {
+    name: body.name,
+    number: body.number,
+  };
+
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then((updatedPerson) => response.json(updatedPerson))
+    .catch((error) => next(error));
 });
 
 app.use(errorHandler);
