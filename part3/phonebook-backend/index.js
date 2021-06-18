@@ -9,6 +9,14 @@ app.use(express.static("build"));
 app.use(cors());
 app.use(express.json());
 
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "malformatted id" });
+  }
+  next(error);
+};
+
 morgan.token("body", (request, response) =>
   request.method === "POST" ? JSON.stringify(request.body) : " "
 );
@@ -67,14 +75,15 @@ app.get("/api/persons/:id", (request, response) => {
 });
 
 // delete a resource
-app.delete("/api/persons/:id", (request, response) => {
-  Person.findByIdAndDelete(request.params.id).then((result) => {
-    response.status(204).end();
-  });
+app.delete("/api/persons/:id", (request, response, next) => {
+  Person.findByIdAndDelete(request.params.id)
+    .then((result) => {
+      response.status(204).end();
+    })
+    .catch((error) => next(error));
 });
 
 // create a resource
-
 app.post("/api/persons", (request, response) => {
   const body = request.body;
   if (!body.name) {
@@ -93,6 +102,8 @@ app.post("/api/persons", (request, response) => {
     response.json(savedPerson);
   });
 });
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

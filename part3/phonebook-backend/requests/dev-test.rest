@@ -51,4 +51,4 @@ Content-Type: application/json
 }
 ###
 
-DELETE http://localhost:3001/api/persons/807852169752837
+DELETE http://localhost:3001/api/persons/2
