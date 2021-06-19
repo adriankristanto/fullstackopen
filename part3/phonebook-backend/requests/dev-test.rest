@@ -28,8 +28,18 @@ POST http://localhost:3001/api/persons
 Content-Type: application/json
 
 {
-    "name": "Test name",
-    "number": "Test number"
+    "name": "Liisa Marttinen",
+    "number": "040-2435"
+}
+
+###
+
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+    "name": "Test Person",
+    "number": "000-00000"
 }
 
 ###
@@ -55,10 +65,10 @@ DELETE http://localhost:3001/api/persons/2
 
 ###
 
-PUT http://localhost:3001/api/persons/60ccc0270d35596471ddcbab
+PUT http://localhost:3001/api/persons/60cd9db4ec358631f0125fd3
 Content-Type: application/json
 
 {
-    "name": "Test name",
-    "number": "Test update number"
+    "name": "Test Person",
+    "number": "333-3333"
 }

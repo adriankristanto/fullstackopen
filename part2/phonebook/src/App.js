@@ -38,14 +38,18 @@ const App = () => {
         );
         handleNotification(`Updated ${updatedPerson.name}'s number`, "success");
       })
-      .catch((_) => {
-        handleNotification(
-          `${duplicatePerson.name} was already deleted from server.`,
-          "error"
-        );
-        setPersons(
-          persons.filter((person) => person.id !== duplicatePerson.id)
-        );
+      .catch((error) => {
+        if (error.response.status === 400) {
+          handleNotification(error.response.data.error, "error");
+        } else {
+          handleNotification(
+            `${duplicatePerson.name} was already deleted from server.`,
+            "error"
+          );
+          setPersons(
+            persons.filter((person) => person.id !== duplicatePerson.id)
+          );
+        }
       });
   };
 
@@ -62,10 +66,15 @@ const App = () => {
         name: newName,
         number: newNumber,
       };
-      personService.createPerson(newPerson).then((createdPerson) => {
-        setPersons(persons.concat(createdPerson));
-        handleNotification(`Added ${createdPerson.name}`, "success");
-      });
+      personService
+        .createPerson(newPerson)
+        .then((createdPerson) => {
+          setPersons(persons.concat(createdPerson));
+          handleNotification(`Added ${createdPerson.name}`, "success");
+        })
+        .catch((error) => {
+          handleNotification(error.response.data.error, "error");
+        });
     }
     setNewName("");
     setNewNumber("");
@@ -85,7 +94,10 @@ const App = () => {
     if (window.confirm(`Delete ${person.name}?`)) {
       personService
         .deletePerson(person.id)
-        .then((_) => handleNotification(`Deleted ${person.name}`, "success"))
+        .then((_) => {
+          handleNotification(`Deleted ${person.name}`, "success");
+          setPersons(persons.filter((p) => p.id !== person.id));
+        })
         .catch((_) => {
           handleNotification(
             `${person.name} was already deleted from server.`,
@@ -93,7 +105,6 @@ const App = () => {
           );
           setPersons(persons.filter((p) => p.id !== person.id));
         }); // returns empty JSON object
-      setPersons(persons.filter((p) => p.id !== person.id));
     }
   };
 

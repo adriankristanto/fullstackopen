@@ -19,12 +19,23 @@ mongoose
 const personSchema = new mongoose.Schema({
   name: {
     type: String,
+    minLength: 3,
     required: true,
     unique: true,
   },
   number: {
     type: String,
     required: true,
+    validate: {
+      validator: (phoneNumber) => {
+        // find all digits in the phone number
+        const digitsArr = phoneNumber.match(/\d+/g);
+        // if none found, return 0 and check whether > 8
+        return (digitsArr ? digitsArr.join("").length : 0) >= 8;
+      },
+      message: (props) =>
+        `${props.value} is not a valid phone number. A valid phone number must contain at least 8 digits.`,
+    },
   },
 });
 
