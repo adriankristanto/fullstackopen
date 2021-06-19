@@ -11,7 +11,7 @@ mongoose
     useFindAndModify: false,
     useCreateIndex: true,
   })
-  .then((result) => {
+  .then(() => {
     console.log("successfully connected to MongoDB!");
   })
   .catch((error) => console.log("error connecting to MongoDB:", error.message));
