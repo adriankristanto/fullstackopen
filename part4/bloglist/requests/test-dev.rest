@@ -1,0 +1,13 @@
+GET http://localhost:3001/api/blogs
+
+###
+
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+
+{
+    "title":"The wayfinding premium",
+    "author":"Seth Godin",
+    "url":"https://seths.blog/2021/06/the-wayfinding-premium/",
+    "likes": 0
+}
