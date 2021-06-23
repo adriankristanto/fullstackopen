@@ -43,9 +43,35 @@ const mostBlogs = (blogs) => {
       );
 };
 
+const mostLikes = (blogs) => {
+  const reducer = (authors, blog) => {
+    const authorIndex = authors.findIndex(
+      (author) => author.author === blog.author
+    );
+    if (authorIndex === -1) {
+      return authors.concat({ author: blog.author, likes: blog.likes });
+    } else {
+      authors.splice(authorIndex, 1, {
+        author: authors[authorIndex].author,
+        likes: authors[authorIndex].likes + blog.likes,
+      });
+      return authors;
+    }
+  };
+  const authors = blogs.reduce(reducer, []);
+  return authors.length === 0
+    ? {}
+    : authors.reduce(
+        (maxAuthor, author) =>
+          author.likes > maxAuthor.likes ? author : maxAuthor,
+        authors[0]
+      );
+};
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
   mostBlogs,
+  mostLikes,
 };
