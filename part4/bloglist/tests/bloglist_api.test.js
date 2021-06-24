@@ -152,6 +152,16 @@ describe("updating a blog post", () => {
     };
     await api.put(`/api/blogs/${invalidId}`).send(dummyBlog).expect(400);
   });
+
+  test("fails with invalid data, i.e. missing title and url", async () => {
+    const notesAtStart = await helper.blogsInDb();
+    const noteToUpdate = notesAtStart[0];
+
+    await api
+      .put(`/api/blogs/${noteToUpdate.id}`)
+      .send({ likes: 100 })
+      .expect(400);
+  });
 });
 
 afterAll(() => {
