@@ -94,6 +94,37 @@ describe("Bloglist", () => {
   });
 });
 
+describe("deletion of a blog post", () => {
+  test("succeeds with status code 204 if id is valid", async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToDelete = blogsAtStart[0];
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.blogs.length - 1);
+
+    const blogContents = blogsAtEnd.map((blog) => {
+      return {
+        title: blog.title,
+        author: blog.author,
+        url: blog.url,
+        likes: blog.likes,
+      };
+    });
+    expect(blogContents).not.toContainEqual({
+      title: blogToDelete.title,
+      author: blogToDelete.author,
+      url: blogToDelete.url,
+      likes: blogToDelete.likes,
+    });
+  });
+
+  test("fails with status code 400 if id is invalid", async () => {
+    const invalidId = "1";
+    await api.delete(`/api/blogs/${invalidId}`).expect(400);
+  });
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
