@@ -81,6 +81,14 @@ describe("Bloglist", () => {
 
     expect(result.body.likes).toBe(0);
   });
+
+  test("does not accept new blogs with missing title and url", async () => {
+    const newBlog = {
+      author: "Seth Godin",
+    };
+
+    await api.post("/api/blogs").send(newBlog).expect(400);
+  });
 });
 
 afterAll(() => {
