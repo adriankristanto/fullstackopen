@@ -15,7 +15,7 @@ beforeEach(async () => {
   await Promise.all(promises);
 });
 
-describe("Bloglist", () => {
+describe("fetching blog post(s)", () => {
   test("returns blogs in the JSON format", async () => {
     await api
       .get("/api/blogs")
@@ -36,8 +36,10 @@ describe("Bloglist", () => {
       expect(blog._id).not.toBeDefined();
     });
   });
+});
 
-  test("adds valid blog post", async () => {
+describe("creation of a blog post", () => {
+  test("succeeds with valid data", async () => {
     const newBlog = {
       title: "The wayfinding premium",
       author: "Seth Godin",
@@ -82,7 +84,7 @@ describe("Bloglist", () => {
     expect(result.body.likes).toBe(0);
   });
 
-  test("does not accept new blogs with missing title and url", async () => {
+  test("fails with status code 400 if the new blog does not have title and url", async () => {
     const newBlog = {
       author: "Seth Godin",
     };
@@ -122,6 +124,33 @@ describe("deletion of a blog post", () => {
   test("fails with status code 400 if id is invalid", async () => {
     const invalidId = "1";
     await api.delete(`/api/blogs/${invalidId}`).expect(400);
+  });
+});
+
+describe("updating a blog post", () => {
+  test("succeeds with valid id", async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToUpdate = blogsAtStart[0];
+    const updatedBlog = { ...blogToUpdate, likes: 100 };
+
+    const response = await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(updatedBlog)
+      .expect(200)
+      .expect("Content-Type", /application\/json/);
+
+    expect(response.body.likes).toBe(100);
+  });
+
+  test("fails with status code 400 with invalid id", async () => {
+    const invalidId = "1";
+    const dummyBlog = {
+      title: "dummy title",
+      author: "dummy author",
+      url: "dummy url",
+      likes: "dummy likes",
+    };
+    await api.put(`/api/blogs/${invalidId}`).send(dummyBlog).expect(400);
   });
 });
 
