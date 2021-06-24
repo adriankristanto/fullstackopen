@@ -36,6 +36,28 @@ describe("Bloglist", () => {
       expect(blog._id).not.toBeDefined();
     });
   });
+
+  test("adds valid blog post", async () => {
+    const newBlog = {
+      title: "The wayfinding premium",
+      author: "Seth Godin",
+      url: "https://seths.blog/2021/06/the-wayfinding-premium/",
+      likes: 0,
+    };
+
+    await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
+
+    const blogs = await helper.blogsInDb();
+    expect(blogs).toHaveLength(helper.blogs.length + 1);
+
+    // since url will always be unique for each blog post
+    const blogUrls = blogs.map((blog) => blog.url);
+    expect(blogUrls).toContain(newBlog.url);
+  });
 });
 
 afterAll(() => {
