@@ -15,7 +15,7 @@ beforeEach(async () => {
   await Promise.all(promises);
 });
 
-describe("Bloglist API", () => {
+describe("Bloglist", () => {
   test("returns blogs in the JSON format", async () => {
     await api
       .get("/api/blogs")
@@ -27,6 +27,14 @@ describe("Bloglist API", () => {
     const response = await api.get("/api/blogs");
 
     expect(response.body).toHaveLength(helper.blogs.length);
+  });
+
+  test("defined id property for each blog post, instead of _id", async () => {
+    const response = await api.get("/api/blogs");
+    response.body.forEach((blog) => {
+      expect(blog.id).toBeDefined();
+      expect(blog._id).not.toBeDefined();
+    });
   });
 });
 
