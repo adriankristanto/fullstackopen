@@ -54,9 +54,32 @@ describe("Bloglist", () => {
     const blogs = await helper.blogsInDb();
     expect(blogs).toHaveLength(helper.blogs.length + 1);
 
-    // since url will always be unique for each blog post
-    const blogUrls = blogs.map((blog) => blog.url);
-    expect(blogUrls).toContain(newBlog.url);
+    // removes id property
+    const blogContents = blogs.map((blog) => {
+      return {
+        title: blog.title,
+        author: blog.author,
+        url: blog.url,
+        likes: blog.likes,
+      };
+    });
+    expect(blogContents).toContainEqual(newBlog);
+  });
+
+  test("defaults the likes to 0 if the likes property is missing from request", async () => {
+    const newBlog = {
+      title: "The wayfinding premium",
+      author: "Seth Godin",
+      url: "https://seths.blog/2021/06/the-wayfinding-premium/",
+    };
+
+    const result = await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
+
+    expect(result.body.likes).toBe(0);
   });
 });
 
