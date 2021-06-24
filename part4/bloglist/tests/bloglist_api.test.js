@@ -88,6 +88,9 @@ describe("Bloglist", () => {
     };
 
     await api.post("/api/blogs").send(newBlog).expect(400);
+
+    const result = await helper.blogsInDb();
+    expect(result).toHaveLength(helper.blogs.length);
   });
 });
 
