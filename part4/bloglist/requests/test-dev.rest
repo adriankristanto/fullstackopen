@@ -11,3 +11,18 @@ Content-Type: application/json
     "url":"https://seths.blog/2021/06/the-wayfinding-premium/",
     "likes": 0
 }
+
+###
+
+POST http://localhost:3001/api/users
+Content-Type: application/json
+
+{
+    "username": "mluukkai",
+    "name": "Matti Luukkainen",
+    "password": "password"
+}
+
+###
+
+GET http://localhost:3001/api/users
