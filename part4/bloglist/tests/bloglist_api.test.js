@@ -39,6 +39,22 @@ describe("fetching blog post(s)", () => {
 });
 
 describe("creation of a blog post", () => {
+  let token;
+
+  beforeAll(async () => {
+    const user = {
+      username: "testuser",
+      name: "test user",
+      password: "test password",
+    };
+
+    await api.post("/api/users").send(user);
+
+    const response = await api.post("/api/login").send(user);
+
+    token = response.body.token;
+  });
+
   test("succeeds with valid data", async () => {
     const newBlog = {
       title: "The wayfinding premium",
@@ -49,6 +65,7 @@ describe("creation of a blog post", () => {
 
     await api
       .post("/api/blogs")
+      .auth(token, { type: "bearer" })
       .send(newBlog)
       .expect(201)
       .expect("Content-Type", /application\/json/);
@@ -77,6 +94,7 @@ describe("creation of a blog post", () => {
 
     const result = await api
       .post("/api/blogs")
+      .auth(token, { type: "bearer" })
       .send(newBlog)
       .expect(201)
       .expect("Content-Type", /application\/json/);
@@ -89,21 +107,61 @@ describe("creation of a blog post", () => {
       author: "Seth Godin",
     };
 
-    await api.post("/api/blogs").send(newBlog).expect(400);
+    await api
+      .post("/api/blogs")
+      .auth(token, { type: "bearer" })
+      .send(newBlog)
+      .expect(400);
 
     const result = await helper.blogsInDb();
     expect(result).toHaveLength(helper.blogs.length);
   });
+
+  test("fails with status code 401 unauthorized if a token is not provided", async () => {
+    await api.post("/api/blogs").send({}).expect(401);
+  });
 });
 
 describe("deletion of a blog post", () => {
+  let token;
+
+  beforeAll(async () => {
+    const user = {
+      username: "testuser",
+      name: "test user",
+      password: "test password",
+    };
+
+    await api.post("/api/users").send(user);
+
+    const userResponse = await api.post("/api/login").send(user);
+
+    token = userResponse.body.token;
+  });
+
   test("succeeds with status code 204 if id is valid", async () => {
-    const blogsAtStart = await helper.blogsInDb();
-    const blogToDelete = blogsAtStart[0];
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    const blog = {
+      title: "test blog",
+      author: "test author",
+      url: "test url",
+      likes: 0,
+    };
+
+    const blogResponse = await api
+      .post("/api/blogs")
+      .auth(token, { type: "bearer" })
+      .send(blog);
+
+    const blogToDelete = blogResponse.body;
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .auth(token, { type: "bearer" })
+      .expect(204);
 
     const blogsAtEnd = await helper.blogsInDb();
-    expect(blogsAtEnd).toHaveLength(helper.blogs.length - 1);
+    // since we add another blogpost, removing it will not change the array length
+    expect(blogsAtEnd).toHaveLength(helper.blogs.length);
 
     const blogContents = blogsAtEnd.map((blog) => {
       return {
@@ -123,7 +181,10 @@ describe("deletion of a blog post", () => {
 
   test("fails with status code 400 if id is invalid", async () => {
     const invalidId = "1";
-    await api.delete(`/api/blogs/${invalidId}`).expect(400);
+    await api
+      .delete(`/api/blogs/${invalidId}`)
+      .auth(token, { type: "bearer" })
+      .expect(400);
   });
 });
 

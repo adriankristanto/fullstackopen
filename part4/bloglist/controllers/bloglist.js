@@ -42,6 +42,7 @@ bloglistRouter.delete(
     const blog = await Blog.findById(request.params.id);
 
     if (blog.user.toString() === user._id.toString()) {
+      await Blog.findByIdAndDelete(request.params.id);
       response.status(204).end();
     } else {
       response
