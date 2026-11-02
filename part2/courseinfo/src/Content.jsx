@@ -1,15 +1,15 @@
-import Part from "./Part";
-import Total from "./Total";
+import Part from './Part'
 
-const Content = ({ parts }) => {
-  return (
-    <>
-      {parts.map(({ name, exercises }) => {
-        return <Part key={name} part={name} exercises={exercises} />
-      })}
-      <Total parts={parts} />
-    </>
-  );
-}
+const Content = ({parts}) => (
+  <div>
+    {
+        parts.map(part => {
+            return (
+                <Part key={part.name} part={part} />
+            )
+        })
+    }
+  </div>
+)
 
-export default Content;
+export default Content

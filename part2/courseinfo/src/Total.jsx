@@ -1,7 +1,3 @@
-const Total = ({ parts }) => {
-  return (
-    <p>Number of exercises {parts.reduce((acc, { exercises }) => acc + exercises, 0)}</p>
-  );
-}
+const Total = (props) => <strong>Number of exercises {props.total}</strong>
 
-export default Total;
+export default Total

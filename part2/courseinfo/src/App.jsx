@@ -27,7 +27,7 @@ const App = () => {
           id: 4
         }
       ]
-    },
+    }, 
     {
       name: 'Node.js',
       id: 2,
@@ -48,9 +48,8 @@ const App = () => {
 
   return (
     <>
-      {courses.map(course => {
-        return <Course key={course.id} course={course} />
-      })}
+    <h1>Web development curriculum</h1>
+      {courses.map(course => <Course course={course} />)}
     </>
   )
 }
