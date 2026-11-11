@@ -1,18 +1,29 @@
 const PersonDisplay = ({
     persons,
     searchFilter,
+    onDelete
 }) => {
-    return persons
-          .filter(
-            person => 
-              person.name.toLowerCase().includes(searchFilter.toLowerCase())
-          )
-          .map(
-            (person) => 
-                <div key={person.name}>
-                    {`${person.name} ${person.number}`}
-                </div>
-          );
+    return (
+        <table>
+            {persons
+              .filter(
+                person => 
+                  person.name.toLowerCase().includes(searchFilter.toLowerCase())
+              )
+              .map(
+                (person) => 
+                    <tr key={person.id}>
+                        <td>{person.name}</td>
+                        <td>{person.number}</td>
+                        <td>
+                        <button onClick={onDelete(person.id)}>
+                            Delete
+                        </button>
+                        </td>
+                    </tr>
+              )}
+        </table>
+        )
 }
  
 export default PersonDisplay;

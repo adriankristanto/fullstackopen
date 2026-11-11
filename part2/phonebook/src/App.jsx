@@ -47,6 +47,15 @@ const App = () => {
     setSearch(event.target.value)
   }
 
+  const handleDeletePerson = id => () => {
+    const found = persons.find(person => person.id === id)
+    if (found && window.confirm(`Delete ${found.name}?`)) {
+      personService
+        .remove(id)
+        .then(_ => setPersons(prev => prev.filter(person => person.id !== id)))
+    }
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -60,7 +69,7 @@ const App = () => {
         onSubmit={handleAddPersonSubmit}
       />
       <h2>Numbers</h2>
-      <PersonDisplay persons={persons} searchFilter={search} />
+      <PersonDisplay persons={persons} searchFilter={search} onDelete={handleDeletePerson} />
     </div>
   )
 }
