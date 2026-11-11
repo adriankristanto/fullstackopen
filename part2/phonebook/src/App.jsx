@@ -21,18 +21,28 @@ const App = () => {
   const handleAddPersonSubmit = (event) => {
     event.preventDefault()
     const found = persons.find(person => person.name.toLowerCase() === newName.toLowerCase())
-    if (found) {
-      alert(`${newName} is already added to phonebook`)
+    if (!found) {
+      const newPerson = {name: newName, number: newNumber}
+    personService
+        .create(newPerson)
+        .then(
+          createdPerson => setPersons(prev => prev.concat(createdPerson))
+        )
+      setNewName('')
+      setNewNumber('')
       return
     }
-    const newPerson = {name: newName, number: newNumber}
-    personService
-      .create(newPerson)
-      .then(
-        createdPerson => setPersons(prev => prev.concat(createdPerson))
-      )
-    setNewName('')
-    setNewNumber('')
+    
+    if (window.confirm(`${found.name} is already added to phonebook, replace the old number with a new one?`)) {
+      const updatedPerson = {...found, number: newNumber}
+      personService
+        .update(found.id, updatedPerson)
+        .then(returnedPerson => {
+          setPersons(prev => prev.map(
+            person => person.id === returnedPerson.id ? returnedPerson : person
+          ))
+        })
+    }
   }
 
   const handleNameInputChange = (event) => {
@@ -52,7 +62,7 @@ const App = () => {
     if (found && window.confirm(`Delete ${found.name}?`)) {
       personService
         .remove(id)
-        .then(_ => setPersons(prev => prev.filter(person => person.id !== id)))
+        .then(returnedPerson => setPersons(prev => prev.filter(person => person.id !== returnedPerson.id)))
     }
   }
 
