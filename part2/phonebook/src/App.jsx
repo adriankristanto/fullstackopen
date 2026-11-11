@@ -4,6 +4,8 @@ import PersonForm from './PersonForm'
 import PersonDisplay from './PersonDisplay'
 import axios from 'axios'
 
+const BASE_URL = 'http://localhost:3001/persons'
+
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
@@ -12,7 +14,7 @@ const App = () => {
 
   useEffect(() => {
     axios
-      .get('http://localhost:3001/persons')
+      .get(BASE_URL)
       .then(response => {
         setPersons(response.data)
       })
@@ -25,7 +27,12 @@ const App = () => {
       alert(`${newName} is already added to phonebook`)
       return
     }
-    setPersons(prev => prev.concat({name: newName, number: newNumber, id: prev.length + 1}))
+    const newPerson = {name: newName, number: newNumber}
+    axios
+      .post(BASE_URL, newPerson)
+      .then(
+        response => setPersons(prev => prev.concat(response.data))
+      )
     setNewName('')
     setNewNumber('')
   }
