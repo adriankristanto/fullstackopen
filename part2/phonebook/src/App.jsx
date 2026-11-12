@@ -32,14 +32,15 @@ const App = () => {
     personService
         .create(newPerson)
         .then(
-          createdPerson => setPersons(prev => prev.concat(createdPerson))
-        )
-      setNotification({
-        message: `Added ${newPerson.name}`,
-        type: 'success'
-      })
-      setNewName('')
-      setNewNumber('')
+          createdPerson => {
+            setPersons(prev => prev.concat(createdPerson))
+            setNotification({
+              message: `Added ${newPerson.name}`,
+              type: 'success'
+            })
+            setNewName('')
+            setNewNumber('')
+          })
       return
     }
     
@@ -51,11 +52,17 @@ const App = () => {
           setPersons(prev => prev.map(
             person => person.id === returnedPerson.id ? returnedPerson : person
           ))
+          setNotification({
+            message: `Updated ${found.name}'s entry`,
+            type: 'success'
+          })
         })
-      setNotification({
-        message: `Updated ${found.name}'s entry`,
-        type: 'success'
-      })
+        .catch(error => {
+          setNotification({
+            message: error.message,
+            type: 'error'
+          })
+        })
     }
   }
 
