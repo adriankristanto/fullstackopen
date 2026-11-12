@@ -3,12 +3,14 @@ import PersonFilter from './PersonFilter'
 import PersonForm from './PersonForm'
 import PersonDisplay from './PersonDisplay'
 import personService from './personService'
+import Notification from './Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [search, setSearch] = useState('')
+  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     personService 
@@ -17,6 +19,10 @@ const App = () => {
         initialPersons => setPersons(initialPersons)
       )
   }, [])
+
+  const handleNotificationClose = () => {
+    setNotification(null)
+  }
 
   const handleAddPersonSubmit = (event) => {
     event.preventDefault()
@@ -28,6 +34,10 @@ const App = () => {
         .then(
           createdPerson => setPersons(prev => prev.concat(createdPerson))
         )
+      setNotification({
+        message: `Added ${newPerson.name}`,
+        type: 'success'
+      })
       setNewName('')
       setNewNumber('')
       return
@@ -42,6 +52,10 @@ const App = () => {
             person => person.id === returnedPerson.id ? returnedPerson : person
           ))
         })
+      setNotification({
+        message: `Updated ${found.name}'s entry`,
+        type: 'success'
+      })
     }
   }
 
@@ -69,6 +83,11 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      {notification && <Notification 
+        message={notification.message} 
+        type={notification.type} 
+        onClose={handleNotificationClose} 
+      />}
       <PersonFilter value={search} onChange={handleSearchInputChange} />
       <h2>Add a new</h2>
       <PersonForm 
