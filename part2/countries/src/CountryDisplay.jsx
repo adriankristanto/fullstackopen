@@ -19,7 +19,7 @@ const CountryDisplay = ({country, show: open}) => {
                 <h2>Languages</h2>
                 <ul>
                     {Object.values(country.languages).map(language => {
-                        return <li>{language}</li>
+                        return <li key={language}>{language}</li>
                     })}
                 </ul>
                 <img src={country.flags.png} alt={country.flags.alt} />
