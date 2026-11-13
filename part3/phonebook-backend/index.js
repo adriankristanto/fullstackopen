@@ -104,12 +104,16 @@ app.get('/api/persons/:id', (request, response) => {
 app.delete('/api/persons/:id', (request, response) => {
     const id = request.params.id 
     const found = persons.findIndex(person => person.id === id)
-    if (found === -1) {
-        response.statusMessage = `Person with id ${id} is not found`
-        response.status(404).end()
-        return
+    // not idempotent
+    // if (found === -1) {
+    //     response.statusMessage = `Person with id ${id} is not found`
+    //     response.status(404).end()
+    //     return
+    // }
+    // idempotent -> always the same outcome regardless of the number of requests made
+    if (found) {
+        persons.splice(found, 1)
     }
-    persons.splice(found, 1)
     response.status(204).end()
 })
 
